@@ -67,6 +67,8 @@ if __name__ == "__main__":
     trail_anonymizer.run("pii_excel_file.xlsx", entities=["CREDIT_CARD", "EMAIL_ADDRESS", "US_SSN"])
 ```
 
+Or - you can just use the run.py script (make sure to update the path to your CSV/EXCEL file)
+
 Parameters
 - path: The path to the file to be anonymized. Supported formats are CSV and XLSX.
 - columns_to_anonymize (optional): List of columns to anonymize. If not specified, all columns will be processed.
