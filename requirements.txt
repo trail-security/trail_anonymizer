@@ -3,3 +3,4 @@ presidio-anonymizer
 pandas
 openpyxl
 XlsxWriter
+spacy
