@@ -1,0 +1,5 @@
+presidio-analyzer
+presidio-anonymizer
+pandas
+openpyxl
+XlsxWriter
