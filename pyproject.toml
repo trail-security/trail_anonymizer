@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trail-anonymizer"
+version = "0.0.1"
+authors = [
+  { name="Yotam Aharony", email="yotam@trailsecurity.com" },
+]
+description = "A package designed to anonymize sensitive information such as Emails, Social Security Numbers, and more."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+license = {file = "LICENSE"}
+dependencies = [
+    "presidio-analyzer",
+    "presidio-anonymizer",
+    "pandas",
+    "openpyxl",
+    "XlsxWriter",
+    "spacy"
+]
+
+[project.urls]
+Homepage = "https://github.com/trail-security/trail_anonymizer"
+Issues = "https://github.com/trail-security/trail_anonymizer/issues"
