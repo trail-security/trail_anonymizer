@@ -20,10 +20,21 @@ logger.setLevel(logging.INFO)
 logger.addHandler(console_handler)
 
 
+def hash_as_hex(string_to_hash: str, hash_length: int = 8) -> str:
+    hash_object = hashlib.sha256(string_to_hash.encode())
+    return hash_object.hexdigest()[:hash_length]
+
+
 def fake_email(original_email: str) -> str:
-    hash_object = hashlib.sha256(original_email.encode())
-    hash_hex = hash_object.hexdigest()
-    return f"user_{hash_hex[:8]}@ts_example.com"
+    email_parts = original_email.split("@")
+    if len(email_parts) != 2:
+        hashed_email = hash_as_hex(original_email)
+        return f"user_{hashed_email[:8]}@ts_example.com"
+
+    email_prefix = email_parts[0]
+    email_domain = email_parts[1]
+    hashed_email_prefix = hash_as_hex(email_prefix)
+    return f"user_{hashed_email_prefix}@{email_domain}"
 
 
 class TrailAnonymizer:
