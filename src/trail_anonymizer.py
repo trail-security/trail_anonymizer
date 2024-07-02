@@ -1,5 +1,6 @@
 import hashlib
 import logging
+import os
 import time
 from collections import defaultdict
 from typing import Optional, List, Dict, Any
@@ -18,6 +19,15 @@ console_handler.setFormatter(formatter)
 logger = logging.getLogger("TrailSecurityAnonymizer")
 logger.setLevel(logging.INFO)
 logger.addHandler(console_handler)
+
+#---------------------------------------------------
+# A Hack to set a cache dir for tldextract, so running offline doesn't fail
+# https://github.com/john-kurkowski/tldextract#:~:text=bbc%20co.uk-,Note%20about%20caching,-Beware%20when%20first
+current_file_path = os.path.abspath(__file__)
+package_directory = os.path.dirname(current_file_path)
+cache_directory = os.path.join(package_directory, '.tld_extractor_cache')
+os.environ["TLDEXTRACT_CACHE"] = cache_directory
+#---------------------------------------------------
 
 
 def hash_as_hex(string_to_hash: str, hash_length: int = 8) -> str:
