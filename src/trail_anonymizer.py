@@ -1,6 +1,7 @@
 import hashlib
 import logging
 import os
+import sys
 import time
 from collections import defaultdict
 from typing import Optional, List, Dict, Any
@@ -57,20 +58,21 @@ class TrailAnonymizer:
 
     def run(
         self,
-        path: str,
+        input_file: str,
+        output_file: str,
         *,
         columns_to_anonymize: Optional[List[str]] = None,
         entities: Optional[List[str]] = None,
     ):
         start = time.perf_counter()
-        logger.info(f"Running TrailSecurityAnonymizer on '{path}'.")
+        logger.info(f"Running TrailSecurityAnonymizer. Input file: '{input_file}' | Output file: '{output_file}'.")
         logger.info("------------------------------")
 
-        file_format = path.split(".")[-1]
+        file_format = input_file.split(".")[-1]
         if file_format == "csv":
-            self._run_csv(path, columns_to_anonymize, entities)
+            self._run_csv(input_file, output_file, columns_to_anonymize, entities)
         elif file_format == "xlsx":
-            self._run_xlsx(path, columns_to_anonymize, entities)
+            self._run_xlsx(input_file, output_file, columns_to_anonymize, entities)
         else:
             raise NotImplementedError(
                 f"{file_format} file format is not supported yet."
@@ -81,41 +83,43 @@ class TrailAnonymizer:
 
     def _run_csv(
         self,
-        path: str,
+        input_file: str,
+        output_file: str,
         columns_to_anonymize: Optional[List[str]] = None,
         entities: Optional[List[str]] = None,
     ):
-        df = pd.read_csv(path)
+        df = pd.read_csv(input_file)
         scrubbed_df = self._run_sheet(
             df,
             columns_to_anonymize,
             entities,
         )
         logger.info("------------------------------")
-        new_file_name = self._new_file_name(path)
-        self._save_csv(scrubbed_df, new_file_name)
+        #new_file_name = self._new_file_name(input_file)
+        self._save_csv(scrubbed_df, output_file)
 
     def _run_xlsx(
         self,
-        path: str,
+        input_file: str,
+        output_file: str,
         columns_to_anonymize: Optional[List[str]] = None,
         entities: Optional[List[str]] = None,
     ):
         scrubbed_sheets_dfs_map = {}
-        sheets_list = pd.read_excel(path, sheet_name=None)
+        sheets_list = pd.read_excel(input_file, sheet_name=None)
         for name, sheet in sheets_list.items():
             logger.info(f"Anonymizing sheet '{name}'.")
             scrubbed_sheet_df = self._run_sheet(sheet, columns_to_anonymize, entities)
             scrubbed_sheets_dfs_map[name] = scrubbed_sheet_df
             logger.info("------------------------------")
 
-        new_file_name = self._new_file_name(path)
-        writer = pd.ExcelWriter(new_file_name, engine="xlsxwriter")
+        #new_file_name = self._new_file_name(input_file)
+        writer = pd.ExcelWriter(output_file, engine="xlsxwriter")
         for sheet_name, sheet_df in scrubbed_sheets_dfs_map.items():
             sheet_df.to_excel(writer, sheet_name=sheet_name, startrow=0, startcol=0)
 
         writer.close()
-        logger.info(f"Anonymized data saved to '{new_file_name}'.")
+        logger.info(f"Anonymized data saved to '{output_file}'.")
 
     def _run_sheet(
         self,
@@ -196,3 +200,11 @@ class TrailAnonymizer:
 
     def _new_file_name(self, path: str) -> str:
         return path.split(".")[0] + "_scrubbed." + path.split(".")[1]
+
+
+if __name__ == "__main__":
+    assert len(sys.argv) == 3, "Usage: python trail_anonymizer.py <input_file> <output_file>"
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
+    trail_anonymizer = TrailAnonymizer()
+    trail_anonymizer.run(input_file, output_file, entities=["CREDIT_CARD", "EMAIL_ADDRESS", "US_SSN"])
