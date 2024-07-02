@@ -1,5 +1,5 @@
 #----------
-from src.set_tldextract_cache import set_tld_extract_cache_dir
+from set_tldextract_cache import set_tld_extract_cache_dir
 set_tld_extract_cache_dir()
 #----------
 
