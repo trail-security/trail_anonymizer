@@ -1,6 +1,10 @@
+#----------
+from src.set_tldextract_cache import set_tld_extract_cache_dir
+set_tld_extract_cache_dir()
+#----------
+
 import hashlib
 import logging
-import os
 import sys
 import time
 from collections import defaultdict
@@ -21,15 +25,6 @@ logger = logging.getLogger("TrailSecurityAnonymizer")
 logger.setLevel(logging.INFO)
 logger.addHandler(console_handler)
 
-#---------------------------------------------------
-# A Hack to set a cache dir for tldextract, so running offline doesn't fail
-# https://github.com/john-kurkowski/tldextract#:~:text=bbc%20co.uk-,Note%20about%20caching,-Beware%20when%20first
-current_file_path = os.path.abspath(__file__)
-package_directory = os.path.dirname(current_file_path)
-cache_directory = os.path.join(package_directory, '.tld_extractor_cache')
-os.environ["TLDEXTRACT_CACHE"] = cache_directory
-#---------------------------------------------------
-
 
 def hash_as_hex(string_to_hash: str, hash_length: int = 8) -> str:
     hash_object = hashlib.sha256(string_to_hash.encode())
@@ -47,6 +42,8 @@ def fake_email(original_email: str) -> str:
     hashed_email_prefix = hash_as_hex(email_prefix)
     return f"user_{hashed_email_prefix}@{email_domain}"
 
+
+#set_tld_extract_cache_dir()
 
 class TrailAnonymizer:
     def __init__(self):
